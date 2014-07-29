@@ -64,7 +64,7 @@ ssize_t read_all(int fd, uint8_t *buffer, size_t length)
         if (received == -1)
             return -1;
         if (received == 0)
-            return 0;
+            return bytes_received;
         bytes_received += (size_t)received;
         bytes_unreceived -= (size_t)received;
     }
