@@ -8,3 +8,6 @@ then we close it and then create another one. That way, data transfer happens
 in the initial regime (with a higher rate limit), increasing the average rate
 of data transfer.
 
+TODO: transfer the chunksize over the control connection from the sender to the
+receiver so you don't have to specify it once on each end.
+
