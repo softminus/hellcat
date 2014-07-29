@@ -64,7 +64,7 @@ ssize_t read_all(int fd, uint8_t *buffer, size_t length)
         if (received == -1)
             return -1;
         if (received == 0)
-            return bytes_received;
+            return (ssize_t) bytes_received;
         bytes_received += (size_t)received;
         bytes_unreceived -= (size_t)received;
     }
@@ -94,7 +94,7 @@ ssize_t write_all(int fd, const uint8_t *buffer, size_t count)
 
 
 int make_socket(char *node, char *port) {
-    int fd, rval;
+    int rval, fd = -1;
     struct addrinfo hints;
     struct addrinfo *result, *rp;
 
@@ -141,7 +141,7 @@ int make_socket(char *node, char *port) {
 
 int make_listener(char *port)
 {
-    int fd, rval, i, status;
+    int rval, fd = -1;
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     int optval = 1;

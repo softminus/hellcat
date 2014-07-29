@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
             break;
         }
 
-        rval_send = write_all(1, buf, rval);
+        rval_send = write_all(1, buf, (size_t)rval);
 
         if (rval_send == -1) {
             perror("write on datafd");
