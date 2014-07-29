@@ -25,17 +25,24 @@ int main(int argc, char* argv[])
     buf = malloc(bufsize);
     assert(buf != NULL);
 
-    datafd = make_listener(argv[2]);
     controlfd = make_listener(argv[3]);
 
     while (1) {
+        datafd = make_listener(argv[2]);
+
+
         rval = read_all(0, buf, bufsize);
         if (rval == -1) {
             perror("read on stdin");
             exit(1);
         }
+        if (rval == 0) { /* eof on stdin */
+            rval = write(controlfd, &done, 1);
+            if (rval != 1) {
+                perror("write on controlfd (while exiting, which makes this even more humiliating)");
+                exit(1);
+            }
 
-        if (rval == 0) {
             break;
         }
 
@@ -45,10 +52,17 @@ int main(int argc, char* argv[])
             perror("write on datafd");
             exit(1);
         }
+        close(datafd);
+        rval = write(controlfd, &cont, 1);
+
+        if (rval != 1) {
+            perror("write on controlfd");
+            exit(1);
+        }
     }
 
-    close(datafd);
     free(buf);
+    close(controlfd);
 
     return 0;
 }
