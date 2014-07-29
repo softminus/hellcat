@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
         exit(10);
     }
 
-    bufsize = atol(argv[1]);
+    bufsize = (size_t) atol(argv[1]);
     buf = malloc(bufsize);
     assert(buf != NULL);
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
             break;
         }
 
-        rval_send = write_all(datafd, buf, rval);
+        rval_send = write_all(datafd, buf, (size_t) rval);
 
         if (rval_send == -1) {
             perror("write on datafd");
