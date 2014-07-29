@@ -1,9 +1,9 @@
-all: recv send 
+all: hellrecv hellsend
 
-recv: recv.c net.c
+hellrecv: recv.c net.c
 	clang -Wall -ggdb -Weverything -o hellrecv recv.c net.c
 
-send: send.c net.c
+hellsend: send.c net.c
 	clang -Wall -ggdb -Weverything -o hellsend send.c net.c
 
 clean:
