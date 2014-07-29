@@ -16,16 +16,16 @@ ssize_t send_all(int socket, const uint8_t *buffer, size_t length, int flag)
     while (bytes_sent < length)
     {
         sent = send(socket, buffer + bytes_sent, bytes_unsent, flag);
-        if (sent == -1) 
+        if (sent == -1)
             return -1;
         bytes_sent += (size_t)sent;
         bytes_unsent -= (size_t)sent;
     }
-    
+
     return (ssize_t)bytes_sent;
 }
 
-/* just runs recv(2) in a loop until an error happens or our peer shuts down 
+/* just runs recv(2) in a loop until an error happens or our peer shuts down
    the connection */
 
 ssize_t recv_all(int socket, uint8_t *buffer, size_t length, int flag)
@@ -38,14 +38,14 @@ ssize_t recv_all(int socket, uint8_t *buffer, size_t length, int flag)
     while (bytes_received < length)
     {
         received = recv(socket, buffer + bytes_received, bytes_unreceived, flag);
-        if (received == -1) 
+        if (received == -1)
             return -1;
-        if (received == 0) 
+        if (received == 0)
             return 0;
         bytes_received += (size_t)received;
         bytes_unreceived -= (size_t)received;
     }
-    
+
     return (ssize_t)bytes_received;
 }
 
@@ -62,12 +62,12 @@ ssize_t write_all(int fd, const uint8_t *buffer, size_t count)
     while (bytes_sent < count)
     {
         sent = write(fd, buffer + bytes_sent, bytes_unsent);
-        if (sent == -1) 
+        if (sent == -1)
             return -1;
         bytes_sent += (size_t)sent;
         bytes_unsent -= (size_t)sent;
     }
-    
+
     return (ssize_t)bytes_sent;
 }
 
