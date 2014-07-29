@@ -186,6 +186,7 @@ int make_listener(char *port)
     }
     if (rp == NULL) /* no address worked */
     {
+        perror("bind");
         fprintf(stderr, "Could not bind to %s\n", port);
         exit(1);
     }
