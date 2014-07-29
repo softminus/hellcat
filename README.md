@@ -10,6 +10,9 @@ close it and then create another one. That way, data transfer always happens in
 the initial regime (the one with a higher rate limit), increasing the average
 rate of data transfer.
 
+You *need* to give the same chunksize value to the receiving end and the
+transmitting end otherwise you will have incomplete transfer.
+
 TODO: transfer the chunksize over the control connection from the sender to the
 receiver so you don't have to specify it once on each end.
 
