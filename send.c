@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[])
 {
-    int datafd, controlfd;
+    int data_listener, datafd, controlfd, control_listener;
     ssize_t rval, rval_send;
     uint8_t *buf;
     size_t bufsize;
@@ -25,10 +25,21 @@ int main(int argc, char* argv[])
     buf = malloc(bufsize);
     assert(buf != NULL);
 
-    controlfd = make_listener(argv[3]);
+    control_listener = make_listener(argv[3]);
+    controlfd = accept(control_listener, NULL, NULL);
+    if (controlfd == -1) {
+        perror("accept on control port");
+        exit(1);
+    }
 
+    data_listener = make_listener(argv[2]);
     while (1) {
-        datafd = make_listener(argv[2]);
+        datafd = accept(data_listener, NULL, NULL);
+        if (datafd == -1) {
+            perror("accept on data port");
+            exit(1);
+        }
+
 
 
         rval = read_all(0, buf, bufsize);
