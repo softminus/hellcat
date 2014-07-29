@@ -13,6 +13,7 @@ int main(int argc, char* argv[])
     ssize_t rval, rval_send;
     uint8_t *buf;
     size_t bufsize;
+    size_t bytes = 0;
     uint8_t cont = CONT;
     uint8_t done = DONE;
 
@@ -34,6 +35,13 @@ int main(int argc, char* argv[])
 
     data_listener = make_listener(argv[2]);
     while (1) {
+        rval = write(controlfd, &cont, 1);
+
+        if (rval != 1) {
+            perror("write on controlfd");
+            exit(1);
+        }
+
         datafd = accept(data_listener, NULL, NULL);
         if (datafd == -1) {
             perror("accept on data port");
@@ -49,6 +57,7 @@ int main(int argc, char* argv[])
         }
         if (rval == 0) { /* eof on stdin */
             rval = write(controlfd, &done, 1);
+            printf("eof reached at %ld bytes\n", bytes);
             if (rval != 1) {
                 perror("write on controlfd (while exiting, which makes this even more humiliating)");
                 exit(1);
@@ -56,7 +65,7 @@ int main(int argc, char* argv[])
 
             break;
         }
-
+        bytes += (size_t) rval;
         rval_send = write_all(datafd, buf, (size_t) rval);
 
         if (rval_send != rval) {
@@ -70,12 +79,6 @@ int main(int argc, char* argv[])
             exit(1);
         }
 
-        rval = write(controlfd, &cont, 1);
-
-        if (rval != 1) {
-            perror("write on controlfd");
-            exit(1);
-        }
     }
 
     printf("exiting loop\n");
