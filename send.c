@@ -52,7 +52,13 @@ int main(int argc, char* argv[])
             perror("write on datafd");
             exit(1);
         }
-        close(datafd);
+
+        rval = close(datafd);
+        if (rval != 0) {
+            perror("close");
+            exit(1);
+        }
+
         rval = write(controlfd, &cont, 1);
 
         if (rval != 1) {
@@ -60,6 +66,8 @@ int main(int argc, char* argv[])
             exit(1);
         }
     }
+
+    printf("exiting loop\n");
 
     free(buf);
     close(controlfd);
