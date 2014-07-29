@@ -59,8 +59,8 @@ int main(int argc, char* argv[])
 
         rval_send = write_all(datafd, buf, (size_t) rval);
 
-        if (rval_send == -1) {
-            perror("write on datafd");
+        if (rval_send != rval) {
+            perror("incomplete write on datafd");
             exit(1);
         }
 
