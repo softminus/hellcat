@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     uint8_t statusbyte;
 
     if (argc != 4) {
-        printf("usage: %s host dataport controlport\n", argv[0]);
+        fprintf(stderr, "usage: %s host dataport controlport\n", argv[0]);
         exit(10);
     }
     controlfd = make_socket(argv[1], argv[3]);
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
         }
 
         if (rval == 0) { /* eof on datafd */
-            perror("unexpected EOF on the datafd");
+            fprintf(stderr, "unexpected EOF on datafd\n");
             exit(1);
         }
 
