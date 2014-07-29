@@ -16,6 +16,7 @@
 
 ssize_t send_all(int socket, const uint8_t *buffer, size_t length, int flag);
 ssize_t recv_all(int socket, uint8_t *buffer, size_t length, int flag);
+ssize_t read_all(int fd, uint8_t *buffer, size_t length);
 ssize_t write_all(int fd, const uint8_t *buffer, size_t count);
 int make_socket(char *node, char *port);
 int make_listener(char *port);

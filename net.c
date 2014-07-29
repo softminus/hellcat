@@ -51,6 +51,27 @@ ssize_t recv_all(int socket, uint8_t *buffer, size_t length, int flag)
 
 
 
+ssize_t read_all(int fd, uint8_t *buffer, size_t length)
+{
+    size_t bytes_received = 0;
+    size_t bytes_unreceived = length;
+
+    ssize_t received;
+
+    while (bytes_received < length)
+    {
+        received = read(fd, buffer + bytes_received, bytes_unreceived);
+        if (received == -1)
+            return -1;
+        if (received == 0)
+            return 0;
+        bytes_received += (size_t)received;
+        bytes_unreceived -= (size_t)received;
+    }
+
+    return (ssize_t)bytes_received;
+}
+
 
 ssize_t write_all(int fd, const uint8_t *buffer, size_t count)
 {
