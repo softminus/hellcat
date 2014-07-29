@@ -9,16 +9,15 @@
 
 int main(int argc, char* argv[])
 {
-    int data_listener, datafd, controlfd, control_listener;
-    ssize_t rval, rval_send;
+    int data_listener, controlfd, control_listener, datafd = -1;
+    ssize_t rval, numbytes, rval_send;
     uint8_t *buf;
     size_t bufsize;
-    size_t bytes = 0;
     uint8_t cont = CONT;
     uint8_t done = DONE;
 
     if (argc != 4) {
-        printf("usage: %s chunksize dataport controlport\nchunksize is in bytes\n", argv[0]);
+        fprintf(stderr, "usage: %s chunksize dataport controlport\nchunksize is in bytes\n", argv[0]);
         exit(10);
     }
 
@@ -35,6 +34,20 @@ int main(int argc, char* argv[])
 
     data_listener = make_listener(argv[2]);
     while (1) {
+        numbytes = read_all(0, buf, bufsize);
+        if (numbytes == -1) {
+            perror("read on stdin");
+            exit(1);
+        }
+        if (numbytes == 0) { /* eof on stdin */
+            rval = write(controlfd, &done, 1);
+            if (rval != 1) {
+                perror("write on controlfd (while exiting, which makes this even more humiliating)");
+                exit(1);
+            }
+
+            break;
+        }
         rval = write(controlfd, &cont, 1);
 
         if (rval != 1) {
@@ -47,28 +60,9 @@ int main(int argc, char* argv[])
             perror("accept on data port");
             exit(1);
         }
+        rval_send = write_all(datafd, buf, (size_t) numbytes);
 
-
-
-        rval = read_all(0, buf, bufsize);
-        if (rval == -1) {
-            perror("read on stdin");
-            exit(1);
-        }
-        if (rval == 0) { /* eof on stdin */
-            rval = write(controlfd, &done, 1);
-            printf("eof reached at %ld bytes\n", bytes);
-            if (rval != 1) {
-                perror("write on controlfd (while exiting, which makes this even more humiliating)");
-                exit(1);
-            }
-
-            break;
-        }
-        bytes += (size_t) rval;
-        rval_send = write_all(datafd, buf, (size_t) rval);
-
-        if (rval_send != rval) {
+        if (rval_send != numbytes) {
             perror("incomplete write on datafd");
             exit(1);
         }
@@ -81,9 +75,12 @@ int main(int argc, char* argv[])
 
     }
 
-    printf("exiting loop\n");
 
     free(buf);
+    if (datafd != -1) {
+        close(datafd);
+    }
+
     close(controlfd);
 
     return 0;
