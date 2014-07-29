@@ -180,6 +180,7 @@ int make_listener(char *port)
         {
             break;  /* we successfully bound, let's exit this loop */
         }
+        perror("bind bind bind");
 
         close(fd); /* making the socket worked but bind() failed so we
                       close this socket */
@@ -192,13 +193,5 @@ int make_listener(char *port)
     }
     freeaddrinfo(result);
     listen(fd, 1);
-    status = accept(fd, NULL, NULL);
-    if(status == -1)
-    {
-        perror("accept");
-        exit (-1);
-    }
-
-
-    return status;
+    return fd;
 }
