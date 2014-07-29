@@ -95,7 +95,7 @@ int make_socket(char *node, char *port) {
     for (rp = result; rp != NULL; rp = rp->ai_next) {
         fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
         if (fd == -1) {
-            /* the socket making failed, so we need to do a different 
+            /* the socket making failed, so we need to do a different
                address */
             continue;
         }
@@ -105,10 +105,10 @@ int make_socket(char *node, char *port) {
             break;  /* we successfully connected, let's exit this loop */
         }
 
-        close(fd); /* making the socket worked but connect() failed so we 
+        close(fd); /* making the socket worked but connect() failed so we
                       close this socket */
     }
-    if (rp == NULL) { /* no address worked */ 
+    if (rp == NULL) { /* no address worked */
         fprintf(stderr, "Could not connect to %s:%s\n",node, port);
         exit(1);
     }
@@ -146,7 +146,7 @@ int make_listener(char *port)
         fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
         if (fd == -1)
         {
-            /* the socket making failed, so we need to do a different 
+            /* the socket making failed, so we need to do a different
                address */
             continue;
         }
@@ -157,7 +157,7 @@ int make_listener(char *port)
             break;  /* we successfully bound, let's exit this loop */
         }
 
-        close(fd); /* making the socket worked but bind() failed so we 
+        close(fd); /* making the socket worked but bind() failed so we
                       close this socket */
     }
     if (rp == NULL) /* no address worked */
@@ -174,6 +174,6 @@ int make_listener(char *port)
         exit (-1);
     }
 
-    
+
     return status;
 }
