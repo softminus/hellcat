@@ -115,3 +115,65 @@ int make_socket(char *node, char *port) {
     freeaddrinfo(result);
     return fd;
 }
+
+
+
+int make_listener(char *port)
+{
+    int fd, rval, i, status;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+
+    /* let's do fun stuff with getaddrinfo now */
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_UNSPEC; /* either ipv4 or ipv6, we don't care */
+    hints.ai_socktype = SOCK_STREAM; /* TCP */
+    hints.ai_flags = AI_PASSIVE;
+    hints.ai_protocol = 0;
+
+
+    rval = getaddrinfo(NULL, port, &hints, &result);
+    if (rval != 0)
+    {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rval));
+        exit(1);
+    }
+    /* now we iterate over the lists of results that getaddrinfo returned
+       until we can successfully make a socket and connect with it */
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
+        fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (fd == -1)
+        {
+            /* the socket making failed, so we need to do a different 
+               address */
+            continue;
+        }
+
+        /* we made a socket, now we try to bind  */
+        if (bind(fd, rp->ai_addr, rp->ai_addrlen) != -1)
+        {
+            break;  /* we successfully bound, let's exit this loop */
+        }
+
+        close(fd); /* making the socket worked but bind() failed so we 
+                      close this socket */
+    }
+    if (rp == NULL) /* no address worked */
+    {
+        fprintf(stderr, "Could not bind to %s\n", port);
+        exit(1);
+    }
+    freeaddrinfo(result);
+    listen(fd, 1);
+    status = accept(fd, NULL, NULL);
+    if(status == -1)
+    {
+        perror("accept");
+        exit (-1);
+    }
+
+    
+    return status;
+}
