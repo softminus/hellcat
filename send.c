@@ -9,10 +9,12 @@
 
 int main(int argc, char* argv[])
 {
-    int outfd;
+    int datafd, controlfd;
     ssize_t rval, rval_send;
     uint8_t *buf;
     size_t bufsize;
+    uint8_t cont = CONT;
+    uint8_t done = DONE;
 
     if (argc != 3) {
         printf("usage: %s chunksize dataport controlport\nchunksize is in bytes\n", argv[0]);
@@ -23,7 +25,8 @@ int main(int argc, char* argv[])
     buf = malloc(bufsize);
     assert(buf != NULL);
 
-    outfd = make_listener(argv[2]);
+    datafd = make_listener(argv[2]);
+    controlfd = make_listener(argv[3]);
 
     while (1) {
         rval = read_all(0, buf, bufsize);
@@ -36,15 +39,15 @@ int main(int argc, char* argv[])
             break;
         }
 
-        rval_send = write_all(outfd, buf, rval);
+        rval_send = write_all(datafd, buf, rval);
 
         if (rval_send == -1) {
-            perror("write on outfd");
+            perror("write on datafd");
             exit(1);
         }
     }
 
-    close(outfd);
+    close(datafd);
     free(buf);
 
     return 0;

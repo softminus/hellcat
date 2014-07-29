@@ -20,3 +20,6 @@ ssize_t read_all(int fd, uint8_t *buffer, size_t length);
 ssize_t write_all(int fd, const uint8_t *buffer, size_t count);
 int make_socket(char *node, char *port);
 int make_listener(char *port);
+
+#define CONT 0xcc
+#define DONE 0xdd
