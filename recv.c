@@ -22,6 +22,19 @@ int main(int argc, char* argv[])
     sleep(1);
 
     while (1) {
+        rval = read(controlfd, &statusbyte, 1);
+
+        if (rval != 1) {
+            perror("read on controlfd");
+            exit(1);
+        }
+
+        if (statusbyte == DONE) {
+            break;
+        }
+
+        assert (statusbyte == CONT);
+
         datafd = make_socket(argv[1], argv[2]);
         rval = read_all(datafd, buf, BUFSIZE);
 
@@ -37,27 +50,12 @@ int main(int argc, char* argv[])
 
         rval_send = write_all(1, buf, (size_t)rval);
 
-        if (rval_send == -1) {
-            perror("write on datafd");
+        if (rval_send != rval) {
+            perror("write on stdout");
             exit(1);
         }
 
         close(datafd);
-
-        /* see if we have more shit to read */
-
-        rval = read(controlfd, &statusbyte, 1);
-
-        if (rval != 1) {
-            perror("read on controlfd");
-            exit(1);
-        }
-
-        if (statusbyte == DONE) {
-            break;
-        }
-
-        assert (statusbyte == CONT);
     }
 
     close(controlfd);
