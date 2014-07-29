@@ -31,8 +31,8 @@ int main(int argc, char* argv[])
         }
 
         if (rval == 0) { /* eof on datafd */
-            close(datafd);
-            break;
+            perror("unexpected EOF on the datafd");
+            exit(1);
         }
 
         rval_send = write_all(1, buf, (size_t)rval);
