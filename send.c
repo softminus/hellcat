@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     uint8_t cont = CONT;
     uint8_t done = DONE;
 
-    if (argc != 3) {
+    if (argc != 4) {
         printf("usage: %s chunksize dataport controlport\nchunksize is in bytes\n", argv[0]);
         exit(10);
     }
