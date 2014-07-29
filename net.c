@@ -144,6 +144,7 @@ int make_listener(char *port)
     int fd, rval, i, status;
     struct addrinfo hints;
     struct addrinfo *result, *rp;
+    int optval = 1;
 
     /* let's do fun stuff with getaddrinfo now */
 
@@ -165,6 +166,8 @@ int make_listener(char *port)
     for (rp = result; rp != NULL; rp = rp->ai_next)
     {
         fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval);
+
         if (fd == -1)
         {
             /* the socket making failed, so we need to do a different
