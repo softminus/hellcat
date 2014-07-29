@@ -1,10 +1,16 @@
+CC=clang
+CFLAGS=-Wall -ggdb -Weverything
+
 all: hellrecv hellsend
 
-hellrecv: recv.c net.c
-	clang -Wall -ggdb -Weverything -o hellrecv recv.c net.c
+%.o : %.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
-hellsend: send.c net.c
-	clang -Wall -ggdb -Weverything -o hellsend send.c net.c
+hellrecv: src/recv.o src/net.o
+	$(CC) -o $@ $^
+
+hellsend: src/send.o src/net.o
+	$(CC) -o $@ $^
 
 clean:
-	rm -f hellsend hellrecv
+	rm -f hellsend hellrecv src/*.o
