@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
         exit(10);
     }
     controlfd = make_socket(argv[1], argv[3]);
+    sleep(1);
 
     while (1) {
         datafd = make_socket(argv[1], argv[2]);
