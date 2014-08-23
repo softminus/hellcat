@@ -3,6 +3,7 @@
 /* the functions in this file handle the whole "receiving" thing */
 
 #include "net.h"
+#include <sys/time.h>
 
 
 
@@ -12,7 +13,9 @@ int main(int argc, char* argv[])
     ssize_t rval, rval_send;
     uint8_t statusbyte;
     uint8_t *buf;
-    size_t bufsize;
+    size_t bufsize, totalsize = 0;
+    struct timeval start, end;
+    float elapsed;
 
     if (argc != 5) {
         fprintf(stderr, "usage: %s chunksize host dataport controlport\nchunksize is in bytes\n", argv[0]);
@@ -24,6 +27,7 @@ int main(int argc, char* argv[])
 
     controlfd = make_socket(argv[2], argv[4]);
     sleep(1);
+    gettimeofday(&start, NULL);
 
     while (1) {
         rval = read(controlfd, &statusbyte, 1);
@@ -35,6 +39,10 @@ int main(int argc, char* argv[])
 
         if (statusbyte == DONE) {
             fprintf(stderr, "received DONE\n");
+            gettimeofday(&end, NULL);
+            elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000;
+            fprintf(stderr, "transferred %zu bytes in %.3f seconds\n", totalsize, elapsed);
+
             break;
         }
 
@@ -60,6 +68,7 @@ int main(int argc, char* argv[])
             exit(1);
         }
 
+        totalsize += (size_t) rval;
         close(datafd);
     }
 
