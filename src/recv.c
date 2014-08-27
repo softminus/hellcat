@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     struct timeval start, end;
     float elapsed;
 
-    if ((argc != 5) || (argc != 4)) {
+    if ((argc != 5) && (argc != 4)) {
         fprintf(stderr, "usage: %s chunksize dataport controlport [host]\nchunksize is in bytes\n", argv[0]);
         exit(10);
     }
