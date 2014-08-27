@@ -32,14 +32,19 @@ int main(int argc, char* argv[])
     buf = malloc(bufsize);
     assert(buf != NULL);
 
-    control_listener = make_listener(argv[3]);
-    controlfd = accept(control_listener, NULL, NULL);
-    if (controlfd == -1) {
-        perror("accept on control port");
-        exit(1);
+    if (listening == 1) {
+        control_listener = make_listener(argv[3]);
+        data_listener = make_listener(argv[2]);
+        controlfd = accept(control_listener, NULL, NULL);
+        if (controlfd == -1) {
+            perror("accept on control port");
+            exit(1);
+        }
+
+    } else {
+        controlfd = make_socket(argv[4], argv[3]);
     }
 
-    data_listener = make_listener(argv[2]);
     while (1) {
         numbytes = read_all(0, buf, bufsize);
         if (numbytes == -1) {
@@ -62,9 +67,15 @@ int main(int argc, char* argv[])
             exit(1);
         }
 
-        datafd = accept(data_listener, NULL, NULL);
+        if (listening == 1) {
+            datafd = accept(data_listener, NULL, NULL);
+        } else {
+            datafd = make_socket(argv[4], argv[2]);
+        }
+
+
         if (datafd == -1) {
-            perror("accept on data port");
+            perror("data port connect / accept failure?");
             exit(1);
         }
         rval_send = write_all(datafd, buf, (size_t) numbytes);
