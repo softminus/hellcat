@@ -9,17 +9,24 @@
 
 int main(int argc, char* argv[])
 {
-    int data_listener, controlfd, control_listener, datafd = -1;
+    int data_listener, controlfd, control_listener, listening, datafd = -1;
     ssize_t rval, numbytes, rval_send;
     uint8_t *buf;
     size_t bufsize;
     uint8_t cont = CONT;
     uint8_t done = DONE;
 
-    if (argc != 4) {
-        fprintf(stderr, "usage: %s chunksize dataport controlport\nchunksize is in bytes\n", argv[0]);
+    if ((argc != 4) || (argc != 5)) {
+        fprintf(stderr, "usage: %s chunksize dataport controlport [host]\nchunksize is in bytes\n", argv[0]);
         exit(10);
     }
+
+    if (argc == 4) {
+        listening = 1;
+    } else {
+        listening = 0;
+    }
+
 
     bufsize = (size_t) atol(argv[1]);
     buf = malloc(bufsize);
