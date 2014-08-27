@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[])
 {
-    int datafd, controlfd;
+    int datafd, controlfd, control_listener, data_listener, listening;
     ssize_t rval, rval_send;
     uint8_t statusbyte;
     uint8_t *buf;
@@ -17,15 +17,33 @@ int main(int argc, char* argv[])
     struct timeval start, end;
     float elapsed;
 
-    if (argc != 5) {
-        fprintf(stderr, "usage: %s chunksize host dataport controlport\nchunksize is in bytes\n", argv[0]);
+    if ((argc != 5) || (argc != 4)) {
+        fprintf(stderr, "usage: %s chunksize dataport controlport [host]\nchunksize is in bytes\n", argv[0]);
         exit(10);
     }
+
+    if (argc == 4) {
+        listening = 1;
+    } else {
+        listening = 0;
+    }
+
     bufsize = (size_t) atol(argv[1]);
     buf = malloc(bufsize);
     assert(buf != NULL);
 
-    controlfd = make_socket(argv[2], argv[4]);
+    if (listening == 0) {
+        controlfd = make_socket(argv[4], argv[3]);
+    } else {
+        control_listener = make_listener(argv[3]);
+        data_listener = make_listener(argv[2]);
+        controlfd = accept(control_listener, NULL, NULL);
+        if (controlfd == -1) {
+            perror("accept on control port");
+            exit(1);
+        }
+    }
+
     sleep(1);
     gettimeofday(&start, NULL);
 
@@ -48,7 +66,16 @@ int main(int argc, char* argv[])
 
         assert (statusbyte == CONT);
 
-        datafd = make_socket(argv[2], argv[3]);
+        if (listening == 0) {
+            datafd = make_socket(argv[2], argv[3]);
+        } else {
+            datafd = accept(data_listener, NULL, NULL);
+            if (datafd == -1) {
+                perror("accept on data port");
+                exit(1);
+            }
+        }
+
         rval = read_all(datafd, buf, bufsize);
 
         if (rval == -1) {
