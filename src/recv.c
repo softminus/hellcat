@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
         assert (statusbyte == CONT);
 
         if (listening == 0) {
-            datafd = make_socket(argv[2], argv[3]);
+            datafd = make_socket(argv[4], argv[2]);
         } else {
             datafd = accept(data_listener, NULL, NULL);
             if (datafd == -1) {
