@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-Wall -ggdb -Weverything
+CFLAGS=-Wall -ggdb -Weverything -fsanitize=integer -fsanitize=address
 
 all: hellrecv hellsend
 
@@ -7,10 +7,10 @@ all: hellrecv hellsend
 	$(CC) -c $(CFLAGS) $< -o $@
 
 hellrecv: src/recv.o src/net.o
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 hellsend: src/send.o src/net.o
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
 	rm -f hellsend hellrecv src/*.o
