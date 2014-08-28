@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-Wall -ggdb -Weverything -fsanitize=integer -fsanitize=address
+CFLAGS=-Wall -ggdb -Weverything # -fsanitize=integer -fsanitize=address -fsanitize=undefined
 
 all: hellrecv hellsend
 
