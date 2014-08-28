@@ -1,4 +1,4 @@
-/* copyright (c) 2013 Matilda Helou <sadieperkins@riseup.net> */
+/* copyright (c) 2013 Kia <> */
 
 #define _GNU_SOURCE
 #include <fcntl.h>

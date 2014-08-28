@@ -1,4 +1,4 @@
-/* copyright (c) 2014 Matilda <sadieperkins@riseup.net> */
+/* copyright (c) 2014 Kia <> */
 /* this file contains functions that make dealing with the network a bit
    easier */
 #include "net.h"

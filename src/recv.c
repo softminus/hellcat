@@ -1,4 +1,4 @@
-/* copyright (c) 2014 Matilda Helou <sadieperkins@riseup.net> */
+/* copyright (c) 2014 Kia <> */
 
 /* the functions in this file handle the whole "receiving" thing */
 
@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 {
     int datafd, controlfd, control_listener, data_listener, listening;
     ssize_t rval, rval_send;
-    uint8_t statusbyte;
+    uint8_t statusbyte, cont = CONT;
     uint8_t *buf;
     size_t bufsize, totalsize = 0;
     struct timeval start, end;
@@ -93,6 +93,15 @@ int main(int argc, char* argv[])
         if (rval_send != rval) {
             perror("write on stdout");
             exit(1);
+        }
+
+        if (listening == 1) {
+            rval = write(controlfd, &cont, 1);
+            if (rval != 1) {
+                perror("write on controlfd");
+                exit(1);
+            }
+
         }
 
         totalsize += (size_t) rval;

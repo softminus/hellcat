@@ -1,4 +1,4 @@
-/* copyright (c) 2014 Matilda Helou <sadieperkins@riseup.net> */
+/* copyright (c) 2014 Kia <> */
 
 /* the functions in this file handle the whole "sending data out" thing */
 
@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
     size_t bufsize;
     uint8_t cont = CONT;
     uint8_t done = DONE;
+    uint8_t statusbyte;
 
     if ((argc != 4) && (argc != 5)) {
         fprintf(stderr, "usage: %s chunksize dataport controlport [host]\nchunksize is in bytes\n", argv[0]);
@@ -46,6 +47,7 @@ int main(int argc, char* argv[])
     }
 
     while (1) {
+
         numbytes = read_all(0, buf, bufsize);
         if (numbytes == -1) {
             perror("read on stdin");
@@ -86,10 +88,23 @@ int main(int argc, char* argv[])
         }
 
         rval = close(datafd);
+
         if (rval != 0) {
             perror("close");
+            fprintf(stderr,"close returned %d\n", rval);
             exit(1);
         }
+
+        if (listening == 0) {
+            rval = read(controlfd, &statusbyte, 1);
+            if (rval != 1) {
+                perror("read on controlfd");
+                fprintf(stderr, "%d\n", rval);
+                exit(1);
+            }
+            assert(statusbyte == CONT);
+        }
+
 
     }
 
