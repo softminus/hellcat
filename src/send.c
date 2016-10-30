@@ -4,9 +4,6 @@
 
 #include "net.h"
 
-
-
-
 int main(int argc, char* argv[])
 {
     int data_listener, controlfd, control_listener, listening, datafd = -1;
@@ -18,16 +15,14 @@ int main(int argc, char* argv[])
     uint8_t statusbyte;
 
     if ((argc != 4) && (argc != 5)) {
-        fprintf(stderr, "usage: %s chunksize dataport controlport [host]\nchunksize is in bytes\n", argv[0]);
+	fprintf(stderr, "usage: %s chunksize dataport controlport [host]\nchunksize is in bytes\n", argv[0]);
         exit(10);
     }
 
-    if (argc == 4) {
+    if (argc == 4)
         listening = 1;
-    } else {
+    else
         listening = 0;
-    }
-
 
     bufsize = (size_t) atol(argv[1]);
     buf = malloc(bufsize);
@@ -41,13 +36,10 @@ int main(int argc, char* argv[])
             perror("accept on control port");
             exit(1);
         }
-
-    } else {
+    } else
         controlfd = make_socket(argv[4], argv[3]);
-    }
 
     while (1) {
-
         numbytes = read_all(0, buf, bufsize);
         if (numbytes == -1) {
             perror("read on stdin");
@@ -59,29 +51,26 @@ int main(int argc, char* argv[])
                 perror("write on controlfd (while exiting, which makes this even more humiliating)");
                 exit(1);
             }
-
             break;
         }
-        rval = write(controlfd, &cont, 1);
 
+        rval = write(controlfd, &cont, 1);
         if (rval != 1) {
             perror("write on controlfd");
             exit(1);
         }
 
-        if (listening == 1) {
+        if (listening == 1)
             datafd = accept(data_listener, NULL, NULL);
-        } else {
+	else
             datafd = make_socket(argv[4], argv[2]);
-        }
-
 
         if (datafd == -1) {
             perror("data port connect / accept failure?");
             exit(1);
         }
-        rval_send = write_all(datafd, buf, (size_t) numbytes);
 
+        rval_send = write_all(datafd, buf, (size_t) numbytes);
         if (rval_send != numbytes) {
             perror("incomplete write on datafd");
             exit(1);
@@ -104,18 +93,12 @@ int main(int argc, char* argv[])
             }
             assert(statusbyte == CONT);
         }
-
-
     }
-
 
     free(buf);
-    if (datafd != -1) {
+    if (datafd != -1)
         close(datafd);
-    }
-
     close(controlfd);
 
     return 0;
 }
-
