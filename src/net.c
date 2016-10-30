@@ -10,11 +10,9 @@ ssize_t send_all(int socket, const uint8_t *buffer, size_t length, int flag)
 {
     size_t bytes_sent = 0;
     size_t bytes_unsent = length;
-
     ssize_t sent;
 
-    while (bytes_sent < length)
-    {
+    while (bytes_sent < length) {
         sent = send(socket, buffer + bytes_sent, bytes_unsent, flag);
         if (sent == -1)
             return -1;
@@ -32,11 +30,9 @@ ssize_t recv_all(int socket, uint8_t *buffer, size_t length, int flag)
 {
     size_t bytes_received = 0;
     size_t bytes_unreceived = length;
-
     ssize_t received;
 
-    while (bytes_received < length)
-    {
+    while (bytes_received < length) {
         received = recv(socket, buffer + bytes_received, bytes_unreceived, flag);
         if (received == -1)
             return -1;
@@ -49,17 +45,13 @@ ssize_t recv_all(int socket, uint8_t *buffer, size_t length, int flag)
     return (ssize_t)bytes_received;
 }
 
-
-
 ssize_t read_all(int fd, uint8_t *buffer, size_t length)
 {
     size_t bytes_received = 0;
     size_t bytes_unreceived = length;
-
     ssize_t received;
 
-    while (bytes_received < length)
-    {
+    while (bytes_received < length) {
         received = read(fd, buffer + bytes_received, bytes_unreceived);
         if (received == -1)
             return -1;
@@ -72,16 +64,13 @@ ssize_t read_all(int fd, uint8_t *buffer, size_t length)
     return (ssize_t)bytes_received;
 }
 
-
 ssize_t write_all(int fd, const uint8_t *buffer, size_t count)
 {
     size_t bytes_sent = 0;
     size_t bytes_unsent = count;
-
     ssize_t sent;
 
-    while (bytes_sent < count)
-    {
+    while (bytes_sent < count) {
         sent = write(fd, buffer + bytes_sent, bytes_unsent);
         if (sent == -1)
             return -1;
@@ -91,7 +80,6 @@ ssize_t write_all(int fd, const uint8_t *buffer, size_t count)
 
     return (ssize_t)bytes_sent;
 }
-
 
 int make_socket(char *node, char *port) {
     int rval, fd = -1;
@@ -137,8 +125,6 @@ int make_socket(char *node, char *port) {
     return fd;
 }
 
-
-
 int make_listener(char *port)
 {
     int rval, fd = -1;
@@ -154,30 +140,25 @@ int make_listener(char *port)
     hints.ai_flags = AI_PASSIVE;
     hints.ai_protocol = 0;
 
-
     rval = getaddrinfo(NULL, port, &hints, &result);
-    if (rval != 0)
-    {
+    if (rval != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rval));
         exit(1);
     }
     /* now we iterate over the lists of results that getaddrinfo returned
        until we can successfully make a socket and connect with it */
-    for (rp = result; rp != NULL; rp = rp->ai_next)
-    {
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
         fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
         setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval);
 
-        if (fd == -1)
-        {
+        if (fd == -1) {
             /* the socket making failed, so we need to do a different
                address */
             continue;
         }
 
         /* we made a socket, now we try to bind  */
-        if (bind(fd, rp->ai_addr, rp->ai_addrlen) != -1)
-        {
+        if (bind(fd, rp->ai_addr, rp->ai_addrlen) != -1) {
             break;  /* we successfully bound, let's exit this loop */
         }
         perror("bind bind bind");
@@ -185,8 +166,8 @@ int make_listener(char *port)
         close(fd); /* making the socket worked but bind() failed so we
                       close this socket */
     }
-    if (rp == NULL) /* no address worked */
-    {
+
+    if (rp == NULL) { /* no address worked */
         perror("bind");
         fprintf(stderr, "Could not bind to %s\n", port);
         exit(1);
