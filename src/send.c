@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 
         if (rval != 0) {
             perror("close");
-            fprintf(stderr,"close returned %d\n", rval);
+            fprintf(stderr,"close returned %ld\n", rval);
             exit(1);
         }
 
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
             rval = read(controlfd, &statusbyte, 1);
             if (rval != 1) {
                 perror("read on controlfd");
-                fprintf(stderr, "%d\n", rval);
+                fprintf(stderr, "%ld\n", rval);
                 exit(1);
             }
             assert(statusbyte == CONT);
